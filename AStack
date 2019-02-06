@@ -1,0 +1,82 @@
+import java.util.Arrays;
+import java.util.EmptyStackException;
+
+public class ArrayStack<T> implements Stack<T> {
+	
+	private T[] stack;
+	private int size = 0;
+	private static final int DEFAULT_CAPACITY = 25;
+	private static final int MAX_CAPACITY = 10000;
+	private boolean initialized = false;
+	
+	 public ArrayStack(int capacity) {
+		 checkCapacity(capacity);
+		 @SuppressWarnings("unchecked")
+		 T[] tempStack = (T[])new Object[capacity];
+		 stack = tempStack;
+		 initialized = true;
+	 }
+	 
+	  public ArrayStack() {
+		  this(DEFAULT_CAPACITY);
+	  }	  
+	
+	public void push(T obj) {
+		checkInitialized();
+		  if (isArrayFull()) {
+			  boolean resizeSuccessful = resizeArray(2 * size);
+			  if (!resizeSuccessful) {
+				  throw new SecurityException("Unable to resize the stack.");
+			  }
+	      }
+	      //Place the new value at stack[size] and inc. size
+	      stack[size++] = obj;
+	}
+
+	public T peek() {
+		checkInitialized();
+		if(empty())
+			throw new EmptyStackException();
+		return stack[size-1];
+	}
+	
+	public T pop() {
+		T top = peek();
+		size--;
+		return top;
+	}
+	
+	public boolean empty() {
+		return size == 0;
+	}
+	
+	//-------------- HELPER METHODS ----------------------------
+	
+	//isArrayFull
+	 private boolean isArrayFull() {
+		 return size >= stack.length;
+	 }
+	  
+	  //CheckInitialized
+	  public void checkInitialized() {
+		  if (!initialized) {
+			  throw new SecurityException("Uninitalized Error. You should never see this message.");
+		  }
+	  }
+	  
+	  //ResizeArray
+	  private boolean resizeArray(int newSize) {
+		  if (newSize > MAX_CAPACITY) {
+			  return false;
+		  }
+	      stack = Arrays.copyOf(stack, newSize);
+	      return true;
+	  }
+	 	 
+	 //This method throws an exception if capacity > MAX_CAPACITY
+	 private void checkCapacity(int capacity) {
+		 if (capacity > MAX_CAPACITY) {
+			 throw new IllegalStateException("Capacity cannot exceed " + MAX_CAPACITY);
+		 }
+	 }
+}
